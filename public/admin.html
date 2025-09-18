@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理員後台</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .admin-panel { max-width: 1200px; margin: 0 auto; }
+        .section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+        button { padding: 5px 10px; margin: 2px; cursor: pointer; }
+        .delete { background: #ff4444; color: white; }
+    </style>
+</head>
+<body>
+    <div class="admin-panel">
+        <h1>管理員後台</h1>
+        
+        <div class="section">
+            <h2>用戶管理</h2>
+            <table id="usersTable">
+                <thead>
+                    <tr><th>ID</th><th>用戶名</th><th>郵箱</th><th>註冊時間</th><th>操作</th></tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>商品管理</h2>
+            <table id="productsTable">
+                <thead>
+                    <tr><th>ID</th><th>商品名</th><th>價格</th><th>狀態</th><th>發布者</th><th>操作</th></tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // 載入數據
+        async function loadUsers() {
+            const response = await fetch('/api/admin/users');
+            const users = await response.json();
+            const tbody = document.querySelector('#usersTable tbody');
+            tbody.innerHTML = users.map(user => `
+                <tr>
+                    <td>${user.id}</td>
+                    <td>${user.username}</td>
+                    <td>${user.email}</td>
+                    <td>${new Date(user.created_at).toLocaleDateString()}</td>
+                    <td><button class="delete" onclick="deleteUser(${user.id})">刪除</button></td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadProducts() {
+            const response = await fetch('/api/products');
+            const products = await response.json();
+            const tbody = document.querySelector('#productsTable tbody');
+            tbody.innerHTML = products.map(product => `
+                <tr>
+                    <td>${product.id}</td>
+                    <td>${product.title || product.name || '未命名'}</td>
+                    <td>$${product.price || 0}</td>
+                    <td>${product.status || '可用'}</td>
+                    <td>${product.seller_name || product.username || '未知用戶'}</td>
+                    <td><button class="delete" onclick="deleteProduct(${product.id})">刪除</button></td>
+                </tr>
+            `).join('');
+        }
+
+        async function deleteUser(id) {
+            if(confirm('確定刪除此用戶？')) {
+                await fetch(`/api/admin/users/${id}`, {method: 'DELETE'});
+                loadUsers();
+            }
+        }
+
+        async function deleteProduct(id) {
+            if(confirm('確定刪除此商品？')) {
+                await fetch(`/api/admin/products/${id}`, {method: 'DELETE'});
+                loadProducts();
+            }
+        }
+
+        // 初始載入
+        loadUsers();
+        loadProducts();
+    </script>
+</body>
+</html>
