@@ -4,111 +4,193 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>二手交換平台</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
+    <link rel="stylesheet" href="style-new.css">
 </head>
 <body>
+    <!-- 頂部通知欄 -->
+    <div class="top-banner">
+        <span>🎉 歡迎來到二手跳蚤市集 - 環保交換，物盡其用</span>
+    </div>
+
+    <!-- 導航欄 -->
     <nav class="navbar">
-        <div class="nav-brand">二手交換</div>
-        <div class="nav-menu">
-            <a href="#" onclick="showSection('home')">首頁</a>
-            <a href="#" onclick="showSection('products')">商品</a>
-            <a href="#" onclick="showSection('add-product')" id="add-product-link" style="display:none">發布商品</a>
-            <a href="#" onclick="showSection('profile')" id="profile-link" style="display:none">個人中心</a>
-            <a href="#" onclick="showSection('auth')" id="auth-link">登入</a>
-            <a href="#" onclick="logout()" id="logout-link" style="display:none">登出</a>
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="logo">🛍️</span>
+                <span class="brand-text">二手市集</span>
+            </div>
+            
+            <div class="nav-menu">
+                <a href="#" onclick="showSection('products')" class="nav-link active">商品</a>
+                <a href="#" onclick="showSection('add-product')" class="nav-link" id="add-product-link" style="display:none">發布商品</a>
+                <a href="#" onclick="showSection('auth')" class="nav-link" id="auth-link">登入</a>
+                <a href="#" onclick="logout()" class="nav-link" id="logout-link" style="display:none">登出</a>
+            </div>
+            
+            <div class="nav-icons">
+                <div class="cart-icon" onclick="toggleCart()">
+                    🛒
+                    <span class="cart-count" id="cart-count" style="display:none;">0</span>
+                </div>
+                <div class="profile-icon" id="profile-icon" style="display:none;">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E" alt="Profile" class="avatar" id="user-avatar" onclick="toggleUserPanel()">
+                    <span class="notification-badge" id="notification-badge" style="display:none;">0</span>
+                </div>
+            </div>
         </div>
     </nav>
 
+    <!-- 用戶側邊面板 -->
+    <div class="user-panel-overlay" id="user-panel-overlay" onclick="closeUserPanel()"></div>
+    <div class="user-panel" id="user-panel">
+        <div class="user-panel-header">
+            <button class="close-btn" onclick="closeUserPanel()">×</button>
+            <div class="user-info">
+                <div class="user-avatar-large">
+                    <img id="panel-user-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E" alt="用戶頭像">
+                    <button class="change-avatar-btn" onclick="showAvatarUpload()" title="更換頭像">📷</button>
+                </div>
+                <div class="user-details">
+                    <h3 id="panel-username"></h3>
+                    <p id="panel-user-email"></p>
+                    <div class="user-stats">
+                        <div class="stat-row">
+                            <span class="stat-label">註冊時間：</span>
+                            <span id="panel-join-date">載入中...</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-icon">📦</span>
+                            <span class="stat-text">商品 <span id="panel-products-count">0</span></span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-icon">❤️</span>
+                            <span class="stat-text">收藏 <span id="panel-favorites-count">0</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="user-panel-menu">
+            <div class="menu-item" onclick="showSection('profile'); loadProfile(); closeUserPanel();">
+                <span class="menu-icon">👤</span>
+                <span class="menu-text">個人中心</span>
+                <span class="menu-arrow">›</span>
+            </div>
+            <div class="menu-item" onclick="showInbox(); closeUserPanel();">
+                <span class="menu-icon">📬</span>
+                <span class="menu-text">收件夾</span>
+                <span class="notification-count" id="inbox-count" style="display:none;">0</span>
+                <span class="menu-arrow">›</span>
+            </div>
+            <div class="menu-item" onclick="showSection('add-product'); closeUserPanel();">
+                <span class="menu-icon">📦</span>
+                <span class="menu-text">發布商品</span>
+                <span class="menu-arrow">›</span>
+            </div>
+            <div class="menu-divider"></div>
+            <div class="menu-item logout-item" onclick="logout();">
+                <span class="menu-icon">🚪</span>
+                <span class="menu-text">登出</span>
+                <span class="menu-arrow">›</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 購物車側邊欄 -->
+    <div class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header">
+            <h3>🛒 購物清單</h3>
+            <button onclick="toggleCart()" class="close-cart">×</button>
+        </div>
+        <div class="cart-items" id="cart-items">
+            <!-- 願望清單商品 -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>總計: $<span id="cart-total-amount">0</span></span>
+            </div>
+            <button class="btn-checkout" onclick="proceedToCheckout()">結帳</button>
+        </div>
+    </div>
+
+    <!-- 頭像上傳視窗 -->
+    <div class="modal" id="avatar-modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>更換頭像</h3>
+                <button onclick="closeAvatarModal()" class="close-modal">×</button>
+            </div>
+            <div class="modal-body">
+                <input type="file" id="avatar-upload" accept="image/*" onchange="previewAvatar(event)">
+                <div class="avatar-preview">
+                    <img id="avatar-preview-img" src="" alt="預覽" style="display:none;">
+                </div>
+                <button onclick="uploadAvatar()" class="btn-primary">上傳頭像</button>
+            </div>
+        </div>
+    </div>
+
     <main class="container">
-        <!-- 首頁 -->
-        <section id="home" class="section active">
-            <div class="hero">
-                <h1>歡迎來到二手交換平台</h1>
-                <p>環保交換，物盡其用</p>
-                <button onclick="showSection('products')" class="btn-primary">瀏覽商品</button>
+        <!-- 商品頁面 -->
+        <section id="products" class="section active">
+            <div class="page-header">
+                <div class="breadcrumb">
+                    <span>商品</span> / <span>二手市集</span>
+                </div>
+                <h1 class="page-title">二手商品</h1>
+            </div>
+
+            <!-- 搜尋和篩選 -->
+            <div class="search-filters">
+                <div class="search-bar">
+                    <input type="text" id="search-input" placeholder="搜尋二手商品...">
+                    <button class="search-btn">🔍</button>
+                </div>
+                
+                <div class="filter-tabs">
+                    <button class="filter-tab active" onclick="filterByCategory('all')">全部</button>
+                    <button class="filter-tab" onclick="filterByCategory('electronics')">電子產品</button>
+                    <button class="filter-tab" onclick="filterByCategory('books')">書籍</button>
+                    <button class="filter-tab" onclick="filterByCategory('clothing')">服飾</button>
+                    <button class="filter-tab" onclick="filterByCategory('furniture')">家具</button>
+                    <button class="filter-tab" onclick="filterByCategory('others')">其他</button>
+                    <button class="filter-tab personal-filter" onclick="showMyProducts(this)" id="my-products-tab" style="display:none;">📦 我的商品</button>
+                    <button class="filter-tab personal-filter" onclick="showMyFavorites(this)" id="my-favorites-tab" style="display:none;">❤️ 我的收藏</button>
+                </div>
+            </div>
+
+            <!-- 商品網格 -->
+            <div class="products-section">
+                <div class="section-header">
+                    <h2>🛒 可購買商品</h2>
+                </div>
+                <div id="products-grid" class="products-grid"></div>
+                
+                <div class="section-header sold-section">
+                    <h2>✅ 已售出商品</h2>
+                    <p class="section-subtitle">這些商品已完成交易，僅供參考</p>
+                </div>
+                <div id="sold-products-grid" class="products-grid sold-products"></div>
             </div>
         </section>
 
-        <!-- 商品列表 -->
-        <section id="products" class="section">
-            <h2>商品列表</h2>
-            <div class="search-bar">
-                <input type="text" id="search-input" placeholder="搜尋商品...">
-                <select id="category-filter">
-                    <option value="">所有分類</option>
-                    <option value="electronics">電子產品</option>
-                    <option value="books">書籍</option>
-                    <option value="clothing">服飾</option>
-                    <option value="furniture">家具</option>
-                    <option value="others">其他</option>
-                </select>
-            </div>
-            <div id="products-grid" class="products-grid"></div>
+        <!-- 商品詳情頁 -->
+        <section id="product-detail" class="section">
+            <div id="product-detail-content"></div>
         </section>
 
         <!-- 發布商品 -->
         <section id="add-product" class="section">
-            <h2>發布商品</h2>
-            <form id="product-form" class="form" enctype="multipart/form-data">
-                <input type="text" id="product-title" placeholder="商品名稱" required>
-                <textarea id="product-description" placeholder="商品描述" required></textarea>
-                <select id="product-category" required>
-                    <option value="">選擇分類</option>
-                    <option value="electronics">電子產品</option>
-                    <option value="books">書籍</option>
-                    <option value="clothing">服飾</option>
-                    <option value="furniture">家具</option>
-                    <option value="others">其他</option>
-                </select>
-                <input type="text" id="product-condition" placeholder="物品狀況" required>
-                <input type="number" id="product-price" placeholder="起始價格" min="0">
-                <input type="file" id="product-image" accept="image/*">
-                <button type="submit" class="btn-primary">發布商品</button>
-            </form>
-        </section>
-
-        <!-- 登入註冊 -->
-        <section id="auth" class="section">
-            <div class="auth-container">
-                <div class="auth-tabs">
-                    <button class="tab-btn active" onclick="switchTab('login')">登入</button>
-                    <button class="tab-btn" onclick="switchTab('register')">註冊</button>
-                </div>
-                
-                <form id="login-form" class="form auth-form active">
-                    <input type="email" id="login-email" placeholder="電子郵件" required>
-                    <input type="password" id="login-password" placeholder="密碼" required>
-                    <button type="submit" class="btn-primary">登入</button>
-                    <p><a href="reset-password.html">忘記密碼？</a></p>
-                </form>
-                
-                <form id="register-form" class="form auth-form">
-                    <input type="text" id="register-username" placeholder="用戶名" required>
-                    <input type="email" id="register-email" placeholder="電子郵件" required>
-                    <input type="password" id="register-password" placeholder="密碼" required>
-                    <button type="submit" class="btn-primary">註冊</button>
-                </form>
-            </div>
-        </section>
-
-        <!-- 個人中心 -->
-        <section id="profile" class="section">
-            <h2>個人中心</h2>
-            <div id="user-info"></div>
-            <div id="user-products"></div>
-        </section>
-
-        <!-- 商品詳情 -->
-        <section id="product-detail" class="section">
-            <div id="product-info"></div>
-            
-            <!-- 編輯商品 -->
-            <div id="edit-product" class="edit-section" style="display:none;">
-                <h3>編輯商品</h3>
-                <form id="edit-product-form" class="form" enctype="multipart/form-data">
-                    <input type="text" id="edit-title" placeholder="商品名稱" required>
-                    <textarea id="edit-description" placeholder="商品描述" required></textarea>
-                    <select id="edit-category" required>
+            <div class="form-container">
+                <h2>發布商品</h2>
+                <form id="add-product-form" enctype="multipart/form-data">
+                    <input type="text" id="product-title" placeholder="商品名稱" required>
+                    <textarea id="product-description" placeholder="商品描述" required></textarea>
+                    <input type="number" id="product-price" placeholder="價格 ($)" min="0" step="0.01">
+                    <input type="number" id="product-quantity" placeholder="數量" min="1" value="1" required>
+                    <select id="product-category" required>
                         <option value="">選擇分類</option>
                         <option value="electronics">電子產品</option>
                         <option value="books">書籍</option>
@@ -116,43 +198,132 @@
                         <option value="furniture">家具</option>
                         <option value="others">其他</option>
                     </select>
-                    <input type="text" id="edit-condition" placeholder="物品狀況" required>
-                    <input type="number" id="edit-price" placeholder="起始價格" min="0">
-                    <input type="file" id="edit-image" accept="image/*">
-                    <button type="submit" class="btn-primary">更新商品</button>
-                    <button type="button" onclick="cancelEdit()" class="btn-secondary">取消</button>
+                    <select id="product-condition" required>
+                        <option value="">物品狀況</option>
+                        <option value="全新">全新</option>
+                        <option value="九成新">九成新</option>
+                        <option value="六成新">六成新</option>
+                        <option value="三成新">三成新</option>
+                    </select>
+                    <input type="file" id="product-image" accept="image/*">
+                    <button type="submit" class="btn-primary">發布商品</button>
                 </form>
             </div>
-            
-            <!-- 修改紀錄 -->
-            <div id="edit-history" class="edit-history" style="display:none;">
-                <h3>修改紀錄</h3>
-                <div id="edits-list"></div>
+        </section>
+
+        <!-- 登入註冊 -->
+        <section id="auth" class="section">
+            <div class="form-container">
+                <div id="login-form">
+                    <h2>登入</h2>
+                    <form onsubmit="login(event)">
+                        <input type="text" id="login-username" placeholder="用戶名" required>
+                        <input type="password" id="login-password" placeholder="密碼" required>
+                        <button type="submit" class="btn-primary">登入</button>
+                    </form>
+                    <p>還沒有帳號？<a href="#" onclick="showRegisterForm()">註冊</a></p>
+                    <p><a href="reset-password.html">忘記密碼？</a></p>
+                </div>
+                
+                <div id="register-form" style="display:none;">
+                    <h2>註冊</h2>
+                    <div class="security-notice">
+                        <p>🔒 我們重視您的資料安全</p>
+                        <ul>
+                            <li>密碼將加密儲存</li>
+                            <li>需要郵箱驗證才能使用</li>
+                            <li>不會分享您的個人資料</li>
+                        </ul>
+                    </div>
+                    <form onsubmit="register(event)">
+                        <input type="text" id="register-username" placeholder="用戶名" required>
+                        <input type="email" id="register-email" placeholder="郵箱" required>
+                        <div class="password-field">
+                            <input type="password" id="register-password" placeholder="密碼 (至少8位，包含大小寫字母和數字)" required>
+                            <div class="password-strength" id="password-strength"></div>
+                        </div>
+                        <div class="terms-checkbox">
+                            <input type="checkbox" id="agree-terms" required>
+                            <label for="agree-terms">我同意 <a href="#" onclick="showTerms()">使用條款</a> 和 <a href="#" onclick="showPrivacy()">隱私政策</a></label>
+                        </div>
+                        <button type="submit" class="btn-primary">註冊</button>
+                    </form>
+                    <p>已有帳號？<a href="#" onclick="showLoginForm()">登入</a></p>
+                </div>
             </div>
-            
-            <!-- 叫價區 -->
-            <div class="bid-section">
-                <h3>叫價區</h3>
-                <div id="bids-list"></div>
-                <form id="bid-form" class="form" style="display:none;">
-                    <input type="number" id="bid-amount" placeholder="出價金額" required>
-                    <textarea id="bid-message" placeholder="留言（選填）"></textarea>
-                    <button type="submit" class="btn-primary">出價</button>
-                </form>
+        </section>
+
+        <!-- 收件夾 -->
+        <section id="inbox" class="section">
+            <div class="page-header">
+                <h1 class="page-title">📬 收件夾</h1>
             </div>
-            
-            <!-- 評論區 -->
-            <div class="comment-section">
-                <h3>評論區</h3>
-                <div id="comments-list"></div>
-                <form id="comment-form" class="form" style="display:none;">
-                    <textarea id="comment-content" placeholder="寫下你的評論..." required></textarea>
-                    <button type="submit" class="btn-primary">發表評論</button>
-                </form>
+            <div class="inbox-container">
+                <div class="inbox-tabs">
+                    <button class="inbox-tab active" onclick="showInboxTab('all')">全部</button>
+                    <button class="inbox-tab" onclick="showInboxTab('conversations')">私訊對話</button>
+                    <button class="inbox-tab" onclick="showInboxTab('pending')">待處理</button>
+                    <button class="inbox-tab" onclick="showInboxTab('completed')">已完成</button>
+                </div>
+                <div id="inbox-content" class="inbox-content">
+                    <!-- 通知列表 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 個人中心 -->
+        <section id="profile" class="section">
+            <div class="profile-container">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <h2>個人中心</h2>
+                    <button onclick="loadProfile()" style="background: none; border: none; cursor: pointer; font-size: 18px; color: #666; padding: 5px;" title="重新載入個人資料">
+                        🔄
+                    </button>
+                </div>
+                
+                <!-- 個人資訊區塊 -->
+                <div class="profile-info-section">
+                    <div class="profile-avatar-section">
+                        <img id="profile-main-avatar" class="profile-main-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E" alt="個人頭像">
+                        <button class="btn-change-avatar" onclick="showAvatarUpload()">更換頭像</button>
+                    </div>
+                    <div class="profile-details">
+                        <h3 id="profile-username">載入中...</h3>
+                        <p id="profile-join-date">註冊時間：載入中...</p>
+                        <div class="profile-stats">
+                            <span id="profile-products-count">商品：0</span>
+                            <span id="profile-favorites-count">收藏：0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 功能標籤 -->
+                <div class="profile-tabs">
+                    <button class="profile-tab active" onclick="showProfileTab('products')">我的商品</button>
+                    <button class="profile-tab" onclick="showProfileTab('favorites')">我的收藏</button>
+                </div>
+                
+                <!-- 內容區域 -->
+                <div id="profile-content">
+                    <div id="products-tab" class="tab-content active">
+                        <div class="tab-header">
+                            <h3>我發布的商品</h3>
+                            <button class="btn-add-product" onclick="showSection('add-product')">+ 發布新商品</button>
+                        </div>
+                        <div id="user-products" class="products-grid"></div>
+                    </div>
+                    <div id="favorites-tab" class="tab-content">
+                        <div class="tab-header">
+                            <h3>我的收藏</h3>
+                            <p class="tab-description">你收藏的商品會顯示在這裡</p>
+                        </div>
+                        <div id="user-favorites" class="products-grid"></div>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
 
-    <script src="script.js"></script>
+    <script src="script-new.js"></script>
 </body>
 </html>
